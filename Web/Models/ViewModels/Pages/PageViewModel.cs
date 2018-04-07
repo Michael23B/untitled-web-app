@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 using Web.Models.Data;
 
 namespace Web.Models.ViewModels.Pages
 {
-    public class PageVM
+    public class PageViewModel
     {
-        public PageVM(PageDTO row)
+        public PageViewModel()
+        {
+        }
+
+        public PageViewModel(PageDTO row)
         {
             Id = row.Id;
             Title = row.Title;
@@ -28,6 +28,7 @@ namespace Web.Models.ViewModels.Pages
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Body { get; set; }
         public int Sorting { get; set; }
+        [Display(Name = "Sidebar")]
         public bool HasSidebar { get; set; }
     }
 }
