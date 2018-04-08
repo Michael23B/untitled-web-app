@@ -20,10 +20,11 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <!--TODO: add categories here-->
+                    <li>@Html.ActionLink("Pages", "Index", "Pages", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
+                    <li>@Html.ActionLink("Sidebar", "EditSidebar", "Pages", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
                 </ul>
                 <ul class="navbar-right">
-                    @Html.ActionLink("Home", "Index", "Home", new { area="" }, new { @class = "navbar-brand", target="_blank" })
+                    @Html.ActionLink("View Website Home", "Index", "Home", new { area = "" }, new { @class = "navbar-brand", target = "_blank"})
                 </ul>
             </div>
         </div>

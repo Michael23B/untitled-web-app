@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Web.Models.Data;
@@ -127,6 +128,94 @@ namespace Web.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult PageDetails(int id = 0)
+        {
+            PageViewModel page;
+
+            using (Db db = new Db())
+            {
+                PageDTO dto = db.Pages.Find(id);
+
+                if (dto == null) return Content($"Page with id: {id} does not exist!");
+
+                page = new PageViewModel(dto);
+            }
+
+            return View(page);
+        }
+
+        //TODO: make this not a GET method
+        public ActionResult DeletePage(int id = 0)
+        {
+            using (Db db = new Db())
+            {
+                PageDTO dto = db.Pages.Find(id);
+
+                if (dto == null) return Content($"Page with id: {id} does not exist!");
+                if (dto.Slug == "home") return Content("The home page cannot be deleted!");
+
+                db.Pages.Remove(dto);
+                db.SaveChanges();
+
+                TempData["message"] = $"Page '{dto.Title}' removed!";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public void ReorderPages(int[] id)
+        {
+            using (Db db = new Db())
+            {
+                int count = 1;
+                
+                PageDTO dto;
+                
+                foreach (var pageId in id)
+                {
+                    dto = db.Pages.Find(pageId);
+                    dto.Sorting = count;
+
+                    db.SaveChanges();
+
+                    count++;
+                }
+            }
+        }
+
+        public ActionResult EditSidebar()
+        {
+            SidebarViewModel model;
+
+            using (Db db = new Db())
+            {
+                SidebarDTO dto = db.Sidebar.Find(1);
+
+                model = new SidebarViewModel(dto);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult EditSidebar(SidebarViewModel model)
+        {
+            using (Db db = new Db())
+            {
+                SidebarDTO dto = db.Sidebar.Find(1);
+
+                dto.Body = model.Body;
+
+                db.SaveChanges();
+
+                TempData["message"] = "Sidebar saved!";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        //TODO: implement this
         private PageDTO GetSlug(PageDTO dto)
         {
             return dto;
