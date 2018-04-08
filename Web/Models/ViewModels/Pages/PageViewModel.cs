@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using Web.Models.Data;
 
 namespace Web.Models.ViewModels.Pages
@@ -26,6 +27,7 @@ namespace Web.Models.ViewModels.Pages
         public string Slug { get; set; }
         [Required]
         [StringLength(int.MaxValue, MinimumLength = 3)]
+        [AllowHtml]
         public string Body { get; set; }
         public int Sorting { get; set; }
         [Display(Name = "Sidebar")]

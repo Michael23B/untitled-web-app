@@ -6,10 +6,10 @@
 
 <h2>Add Page</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Put lots of memes in there</h4>
         <hr />
@@ -59,3 +59,10 @@
 <div>
     @Html.ActionLink("Back to Pages", "Index")
 </div>
+
+@section Scripts {
+    <script src="~/Scripts/ckeditor/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace("Body");
+    </script>
+}
