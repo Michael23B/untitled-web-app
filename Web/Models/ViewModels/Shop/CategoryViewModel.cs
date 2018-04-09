@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Web.Models.Data;
+﻿using Web.Models.Data;
 
 namespace Web.Models.ViewModels.Shop
 {
