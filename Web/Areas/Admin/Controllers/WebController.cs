@@ -32,8 +32,10 @@ namespace Web.Areas.Admin.Controllers
 
             using (Db db = new Db())
             {
-                if (db.Categories.Any(x => x.Name == catName)) return "titletaken";
+                string slug = catName.Replace(" ", "-").ToLower();
 
+                if (db.Categories.Any(x => x.Slug == slug || x.Name == catName)) return "titletaken";
+                
                 CategoryDTO dto = new CategoryDTO
                 {
                     Name = catName,
@@ -49,6 +51,45 @@ namespace Web.Areas.Admin.Controllers
             }
 
             return id;
+        }
+
+        [HttpPost]
+        public void ReorderCategories(int[] id)
+        {
+            using (Db db = new Db())
+            {
+                int count = 1;
+
+                CategoryDTO dto;
+
+                foreach (var catId in id)
+                {
+                    dto = db.Categories.Find(catId);
+                    dto.Sorting = count;
+
+                    db.SaveChanges();
+
+                    count++;
+                }
+            }
+        }
+
+        //TODO: make this not a GET method
+        public ActionResult DeleteCategory(int id = 0)
+        {
+            using (Db db = new Db())
+            {
+                CategoryDTO dto = db.Categories.Find(id);
+
+                if (dto == null) return Content($"Category with id: {id} does not exist!");
+
+                db.Categories.Remove(dto);
+                db.SaveChanges();
+
+                TempData["message"] = $"Page '{dto.Name}' removed!";
+            }
+
+            return RedirectToAction("Categories");
         }
     }
 }

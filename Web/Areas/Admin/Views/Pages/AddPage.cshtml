@@ -50,14 +50,15 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Add Page" class="btn btn-success" />
+                <input type="submit" value="Add Page" class="btn btn-success btn-outline" />
             </div>
         </div>
     </div>
+    <hr />
 }
 
 <div>
-    @Html.ActionLink("Back to Pages", "Index")
+    @Html.ActionLink("Back to Pages", "Index", null, new { @class= "btn btn-primary btn-outline" })
 </div>
 
 @section Scripts {

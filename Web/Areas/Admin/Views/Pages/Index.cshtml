@@ -12,7 +12,7 @@
 <h2>Pages</h2>
 
 <p>
-    @Html.ActionLink("Create New Page", "AddPage")
+    @Html.ActionLink("Create New Page", "AddPage", null, new { @class = "btn btn-success btn-outline" })
 </p>
 
 @if (!Model.Any())
@@ -21,7 +21,7 @@
 }
 else
 {
-    <table class="table sorting" id ="pages">
+    <table class="table sorting" id="pages">
         <tr class="home">
             <th>
                 @Html.DisplayNameFor(model => model.Title)
@@ -35,55 +35,56 @@ else
             <th></th>
         </tr>
 
-    @foreach (var item in Model)
-    {
-        <tr id="id_@item.Id" class="@item.Slug">
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Slug)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HasSidebar)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "EditPage", new { id = item.Id }) |
-                @Html.ActionLink("Details", "PageDetails", new { id = item.Id })
-                @if (item.Slug != "home") { 
-                    @:| @Html.ActionLink("Delete", "DeletePage", new { id = item.Id }, new { @class = "delete" })
-                }
-            </td>
-        </tr>
-    }
+        @foreach (var item in Model)
+        {
+            <tr id="id_@item.Id" class="@item.Slug">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Slug)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HasSidebar)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditPage", new { id = item.Id }, new { @class = "btn btn-warning btn-outline" })
+                    @Html.ActionLink("Details", "PageDetails", new { id = item.Id }, new { @class = "btn btn-primary btn-outline", style = "margin-left: 10px" })
+                    @if (item.Slug != "home")
+                    {
+                        @Html.ActionLink("Delete", "DeletePage", new { id = item.Id }, new { @class = "delete btn btn-danger btn-outline", style = "margin-left: 10px" })
+                    }
+                </td>
+            </tr>
+        }
     </table>
+    <code>Drag to reorder categories sir</code>
 }
 
 @section Scripts {
-    <script
-        src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js">
     </script>
 
-<script>
-    $(function () {
+    <script>
+        $(function () {
 
-        //Confirm delete page
-        $("a.delete").click(function() {
-            if (!confirm("Are you sure you want to delete this page?")) return false;
+            //Confirm delete page
+            $("a.delete").click(function () {
+                if (!confirm("Are you sure you want to delete this page?")) return false;
+            });
+
+
+            //Sort pages
+            $("table#pages tbody").sortable({
+                items: "tr:not(.home)",
+                placeholder: "ui-state-highlight",
+                update: function () {
+                    var ids = $("table#pages tbody").sortable("serialize");
+                    var url = "/Admin/Pages/ReorderPages";
+
+                    $.post(url, ids, function (data) { });
+                }
+            });
         });
-
-
-        //Sort pages
-        $("table#pages tbody").sortable({
-            items: "tr:not(.home)",
-            placeholder: "ui-state-highlight",
-            update: function() {
-                var ids = $("table#pages tbody").sortable("serialize");
-                var url = "/Admin/Pages/ReorderPages";
-
-                $.post(url, ids, function(data) {});
-            }
-        });
-    });
-</script>
+    </script>
 }
