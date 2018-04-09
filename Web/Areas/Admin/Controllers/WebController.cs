@@ -39,7 +39,7 @@ namespace Web.Areas.Admin.Controllers
                 CategoryDTO dto = new CategoryDTO
                 {
                     Name = catName,
-                    Slug = catName.Replace(" ", "-").ToLower(),
+                    Slug = slug,
                     Sorting = int.MaxValue
                 };
 
@@ -90,6 +90,29 @@ namespace Web.Areas.Admin.Controllers
             }
 
             return RedirectToAction("Categories");
+        }
+
+        [HttpPost]
+        public string RenameCategory(string newCatName, int id)
+        {
+            using (Db db = new Db())
+            {
+                string slug = newCatName.Replace(" ", "-").ToLower();
+
+                //if anything in the database matches the given name or slug excluding the entry itself
+                //eg. name: cool Memes -> Cool Memes has the same slug so it wouldnt work unless you did this very advanced check
+                if (db.Categories.Where(x => x.Id != id).Any(x => x.Slug == slug || x.Name == newCatName)) return "titletaken";
+
+                CategoryDTO dto = db.Categories.Find(id);
+                dto.Name = newCatName;
+                dto.Slug = slug;
+
+                db.SaveChanges();
+
+                //TempData["message"] = $"Category '{dto.Name}' saved!"; //(comment out when using jquery)
+            }
+
+            return "ok";
         }
     }
 }

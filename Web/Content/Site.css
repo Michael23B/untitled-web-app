@@ -53,3 +53,7 @@ table.sorting.categories td {
 .btn-danger.btn-outline:hover {
     color: #fff;
 }
+
+.ajaxdivtd {
+    position: absolute;
+}
