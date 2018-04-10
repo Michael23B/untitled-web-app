@@ -1,0 +1,99 @@
+﻿@using PagedList.Mvc
+@using PagedList
+
+@model IEnumerable<Web.Models.ViewModels.Store.ProductViewModel>
+
+@{
+    ViewBag.Title = "Products";
+}
+
+<h2>Products</h2>
+
+<select id="SelectCategory" name="SelectCategory">
+    <option value="0">All</option>
+
+    @foreach (var item in ViewBag.Categories)
+    {
+        if (ViewBag.SelectedCat == item.Value)
+        {
+            <option selected="selected" value="@item.Value">@item.Text</option>
+        }
+        else
+        {
+            <option value="@item.Value">@item.Text</option>
+        }
+    }
+</select>
+<br /><br />
+<p>
+    @Html.ActionLink("Create Product", "AddProduct", null, new { @class = "btn btn-success btn-outline" })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ImageName)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in ViewBag.OnePageOfProducts)
+    {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Description
+            </td>
+            <td>
+                @item.Price
+            </td>
+            <td>
+                <a href="/Admin/Store/EditProduct/@item.Id">
+                    <img src="/Images/Uploads/Products/@item.Id/Thumbs/@item.ImageName" />
+                </a>
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "EditProduct", new { id = item.Id }, new { @class = "btn btn-warning btn-outline" })
+                @Html.ActionLink("Delete", "DeleteProduct", new { id = item.Id }, new { @class = "delete btn btn-danger btn-outline", style = "margin-left: 10px" })
+            </td>
+        </tr>
+    }
+</table>
+
+@Html.PagedListPager((IPagedList)ViewBag.OnePageOfProducts, page => Url.Action("Products", new { page, catId = ViewBag.SelectedCat }))
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js">
+    </script>
+
+    <script>
+        $(function () {
+
+            //Confirm delete product
+            $("#SelectCategory").on("change", function () {
+                var url = $(this).val();
+
+                if (url) {
+                    window.location = "/Admin/Store/Products?catId?=" + url;
+                }
+                return false;
+            });
+
+            //Select category
+            $("a.delete").click(function () {
+                if (!confirm("Are you sure you want to delete this product?")) return false;
+            });
+        });
+    </script>
+}

@@ -1,6 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
+using PagedList;
 using Web.Models.Data;
 using Web.Models.ViewModels.Store;
 
@@ -124,6 +129,146 @@ namespace Web.Areas.Admin.Controllers
             }
 
             return View(product);
+        }
+
+        //TODO: add the image to the viewbag and fill it in on the addproduct view when we fail to validate
+        [HttpPost]
+        public ActionResult AddProduct(ProductViewModel product, HttpPostedFileBase file)
+        {
+            int id;
+
+            using (Db db = new Db())
+            {
+                //check model is valid
+                //we need to return the selectlist for the categories when we go back to the view
+                if (!ModelState.IsValid)
+                {
+                    product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                    return View(product);
+                }
+
+                //check if slug/name is taken
+                string slug = product.Name.Replace(" ", "-").ToLower();
+
+                if (db.Products.Any(x => x.Name == product.Name || x.Slug == slug))
+                {
+                    product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                    ModelState.AddModelError("", "Name or slug taken!");
+                    return View(product);
+                }
+
+                ProductDTO dbEntry = new ProductDTO
+                {
+                    Name = product.Name,
+                    Slug = slug,
+                    Description = product.Description,
+                    Price = product.Price,
+                    CategoryId = product.CategoryId,
+                    CategoryName = db.Categories.FirstOrDefault(x => x.Id == product.CategoryId).Name
+                };
+
+                db.Products.Add(dbEntry);
+                db.SaveChanges();
+
+                id = dbEntry.Id;
+
+                TempData["message"] = $"Product '{product.Name}' added!";
+            }
+
+            //
+            //Image uploading
+            //
+
+            //Create directories
+            var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\Uploads", Server.MapPath(@"\")));
+
+            List<string> paths = new List<string>
+            {
+                Path.Combine(originalDirectory.ToString(), "Products"),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString()),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Thumbs"),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery"),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery\\Thumbs")
+            };
+
+            foreach (string path in paths)
+            {
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            }
+
+            //Check if file was uploaded
+            if (file != null && file.ContentLength > 0)
+            {
+                string ext = file.ContentType.ToLower();
+
+                //if the file format doesnt match, return a model error and category list to the view
+                switch (ext)
+                {
+                    case "image/jpg":
+                    case "image/jpeg":
+                    case "image/pjpeg":
+                    case "image/gif":
+                    case "image/x-png":
+                    case "image/png":
+                        break;
+
+                    default:
+                        using (Db db = new Db())
+                        {
+                            product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                            ModelState.AddModelError("", $"Image not uploaded! {ext} file format not supported!");
+                            //TODO: Redirect to product edit page
+                            return View(product);
+                        }
+                }
+
+                string imageName = file.FileName;
+
+                using (Db db = new Db())
+                {
+                    ProductDTO dto = db.Products.Find(id);
+                    dto.ImageName = imageName;
+                    db.SaveChanges();
+                }
+
+                string path = string.Format("{0}\\{1}", paths[1], imageName);
+                string path2 = string.Format("{0}\\{1}", paths[2], imageName);
+
+                file.SaveAs(path);
+
+                //Thumbnail
+
+                WebImage img = new WebImage(file.InputStream);
+                img.Resize(200, 200);
+                img.Save(path2);
+
+            }
+
+            //TODO: Redirect to a products list or store index instead
+            return RedirectToAction("Index", "Pages");
+        }
+
+        public ActionResult Products(int? page, int? catId)
+        {
+            const int productsPerPage = 5;
+            List<ProductViewModel> products;
+
+            int pageNumber = page ?? 1;
+            int totalPages;
+
+            using (Db db = new Db())
+            {
+                products = db.Products.ToList().Where(x => catId == null || x.CategoryId == catId)
+                                      .Select(x => new ProductViewModel(x)).ToList();
+
+                ViewBag.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                ViewBag.SelectedCat = catId?.ToString();
+            }
+
+            var onePageOfProducts = products.ToPagedList(pageNumber, productsPerPage);
+            ViewBag.OnePageOfProducts = onePageOfProducts;
+
+            return View(products);
         }
     }
 }
