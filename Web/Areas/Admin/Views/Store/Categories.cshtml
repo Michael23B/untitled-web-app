@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Web.Models.ViewModels.Shop.CategoryViewModel>
+﻿@model IEnumerable<Web.Models.ViewModels.Store.CategoryViewModel>
 
 @{
     ViewBag.Title = "Categories";
@@ -80,7 +80,7 @@ else
 
                 ajaxText.show();
 
-                var url = "/Admin/Web/AddNewCategory";
+                var url = "/Admin/Store/AddNewCategory";
                 console.log(url);
                 $.post(url,
                     { catName: catName },
@@ -117,7 +117,7 @@ else
                                 toAppend.find("#item_Name").val(catName);
 
                                 //we return the id of the category as a string once it has been put in the database
-                                toAppend.find("a.delete").attr("href", "/Admin/Web/DeleteCategory/" + data);
+                                toAppend.find("a.delete").attr("href", "/Admin/Store/DeleteCategory/" + data);
 
                                 table.append(toAppend);
                                 table.sortable("refresh");
@@ -132,7 +132,7 @@ else
                 placeholder: "ui-state-highlight",
                 update: function() {
                     var ids = $("table#pages tbody").sortable("serialize");
-                    var url = "/Admin/Web/ReorderCategories";
+                    var url = "/Admin/Store/ReorderCategories";
 
                     $.post(url, ids, function(data) {});
                 }
@@ -175,7 +175,7 @@ else
 
             //the id is stored in the row and starts with 'id_' so we substring to chop that off
             var id = $this.parent().parent().attr("id").substring(3);
-            var url = "/Admin/Web/RenameCategory/";
+            var url = "/Admin/Store/RenameCategory/";
 
             if (newCatName.length < 2) {
                 alert("Category name must be at least 2 characters!");

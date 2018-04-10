@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Web.Models.Data;
 
-namespace Web.Models.ViewModels.Web
+namespace Web.Models.ViewModels.Store
 {
     public class ProductViewModel
     {
@@ -30,7 +31,9 @@ namespace Web.Models.ViewModels.Web
         public decimal Price { get; set; }
         public string CategoryName { get; set; }
         [Required]
+        [DisplayName("Category")]
         public int CategoryId { get; set; }
+        [DisplayName("Product Image")]
         public string ImageName { get; set; }
 
         public IEnumerable<SelectListItem> Categories { get; set; }

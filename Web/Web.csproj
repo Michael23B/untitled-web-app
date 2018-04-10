@@ -153,7 +153,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\PagesController.cs" />
-    <Compile Include="Areas\Admin\Controllers\WebController.cs" />
+    <Compile Include="Areas\Admin\Controllers\StoreController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -164,8 +164,8 @@
     <Compile Include="Models\Data\SidebarDTO.cs" />
     <Compile Include="Models\ViewModels\Pages\PageViewModel.cs" />
     <Compile Include="Models\ViewModels\Pages\SidebarViewModel.cs" />
-    <Compile Include="Models\ViewModels\Web\CategoryViewModel.cs" />
-    <Compile Include="Models\ViewModels\Web\ProductViewModel.cs" />
+    <Compile Include="Models\ViewModels\Store\CategoryViewModel.cs" />
+    <Compile Include="Models\ViewModels\Store\ProductViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -495,7 +495,7 @@
     <Content Include="fileman\lang\sk.json" />
     <Content Include="fileman\lang\tr.json" />
     <Content Include="fileman\web.config" />
-    <Content Include="Areas\Admin\Views\Web\Categories.cshtml" />
+    <Content Include="Areas\Admin\Views\Store\Categories.cshtml" />
     <Content Include="Scripts\ckeditor\ckeditor.php" />
     <Content Include="Scripts\ckeditor\ckeditor_basic.js" />
     <Content Include="Scripts\ckeditor\ckeditor_basic_source.js" />
@@ -850,6 +850,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Areas\Admin\Views\Store\AddProduct.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

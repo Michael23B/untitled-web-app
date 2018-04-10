@@ -1,6 +1,6 @@
 ﻿using Web.Models.Data;
 
-namespace Web.Models.ViewModels.Shop
+namespace Web.Models.ViewModels.Store
 {
     public class CategoryViewModel
     {

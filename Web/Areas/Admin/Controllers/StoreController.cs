@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Web.Mvc;
 using Web.Models.Data;
-using Web.Models.ViewModels.Shop;
+using Web.Models.ViewModels.Store;
 
 namespace Web.Areas.Admin.Controllers
 {
-    public class WebController : Controller
+    public class StoreController : Controller
     {
         public ActionResult Categories()
         {
@@ -113,6 +112,18 @@ namespace Web.Areas.Admin.Controllers
             }
 
             return "ok";
+        }
+
+        public ActionResult AddProduct()
+        {
+            ProductViewModel product = new ProductViewModel();
+
+            using (Db db = new Db())
+            {
+                product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+            }
+
+            return View(product);
         }
     }
 }
