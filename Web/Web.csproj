@@ -909,6 +909,7 @@
     <Folder Include="fileman\Uploads\Business %28serious stuff only%29\" />
     <Folder Include="fileman\Uploads\Images %28also for memes%29\" />
     <Folder Include="fileman\Uploads\Memes\" />
+    <Folder Include="Images\" />
     <Folder Include="Views\Pages\" />
   </ItemGroup>
   <ItemGroup>

@@ -254,11 +254,10 @@ namespace Web.Areas.Admin.Controllers
             List<ProductViewModel> products;
 
             int pageNumber = page ?? 1;
-            int totalPages;
 
             using (Db db = new Db())
             {
-                products = db.Products.ToList().Where(x => catId == null || x.CategoryId == catId)
+                products = db.Products.ToList().Where(x => catId == null || catId == 0 || x.CategoryId == catId)
                                       .Select(x => new ProductViewModel(x)).ToList();
 
                 ViewBag.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
