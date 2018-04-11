@@ -185,6 +185,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\img\loading.gif" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Content\The Big Bang Theory but all the Laughs are Replaced with Loud Screaming.mp3" />
     <Content Include="favicon.ico" />
     <Content Include="fileman\css\images\animated-overlay.gif" />
     <Content Include="fileman\css\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -859,6 +860,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Areas\Admin\Views\Store\AddProduct.cshtml" />
     <Content Include="Areas\Admin\Views\Store\Products.cshtml" />
+    <Content Include="Areas\Admin\Views\Store\EditProduct.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

@@ -131,7 +131,7 @@ namespace Web.Areas.Admin.Controllers
             return View(product);
         }
 
-        //TODO: add the image to the viewbag and fill it in on the addproduct view when we fail to validate
+        //TODO: add the image to the viewbag/tempadata and fill it in on the addproduct view when we fail to validate
         [HttpPost]
         public ActionResult AddProduct(ProductViewModel product, HttpPostedFileBase file)
         {
@@ -216,9 +216,8 @@ namespace Web.Areas.Admin.Controllers
                         using (Db db = new Db())
                         {
                             product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
-                            ModelState.AddModelError("", $"Image not uploaded! {ext} file format not supported!");
-                            //TODO: Redirect to product edit page
-                            return View(product);
+                            TempData["warning"] = $"Image not uploaded! {ext} file format not supported!";
+                            return RedirectToAction("EditProduct", new { id });
                         }
                 }
 
@@ -244,8 +243,7 @@ namespace Web.Areas.Admin.Controllers
 
             }
 
-            //TODO: Redirect to a products list or store index instead
-            return RedirectToAction("Index", "Pages");
+            return RedirectToAction("Products");
         }
 
         public ActionResult Products(int? page, int? catId)
@@ -268,6 +266,145 @@ namespace Web.Areas.Admin.Controllers
             ViewBag.OnePageOfProducts = onePageOfProducts;
 
             return View(products);
+        }
+
+        public ActionResult EditProduct(int id = 0)
+        {
+            ProductViewModel model;
+
+            using (Db db = new Db())
+            {
+                ProductDTO dto = db.Products.Find(id);
+
+                if (dto == null)
+                {
+                    return Content($"Product with id '{id}' could not be found!");
+                }
+
+                model = new ProductViewModel(dto)
+                {
+                    Categories = new SelectList(db.Categories.ToList(), "Id", "Name"),
+                    GalleryImages = Directory.EnumerateFiles(Server.MapPath("~/Images/Uploads/Products/" + id + "/Gallery/Thumbs")).Select(Path.GetFileName)
+                };
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult EditProduct(ProductViewModel product, HttpPostedFileBase file)
+        {
+            int id = product.Id;
+
+            using (Db db = new Db())
+            {
+                //get the gallery image list
+                product.GalleryImages = Directory
+                    .EnumerateFiles(Server.MapPath("~/Images/Uploads/Products/" + id + "/Gallery/Thumbs"))
+                    .Select(Path.GetFileName);
+
+                //get select list from categories
+                product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+
+                //check model is valid
+                if (!ModelState.IsValid) return View(product);
+
+                //check if slug/name is taken
+                string slug = product.Name.Replace(" ", "-").ToLower();
+
+                if (db.Products.Where(x => x.Id != id).Any(x => x.Name == product.Name || x.Slug == slug))
+                {
+                    product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                    ModelState.AddModelError("", "Name or slug taken!");
+                    return View(product);
+                }
+
+                ProductDTO dbEntry = db.Products.Find(id);
+
+                dbEntry.Name = product.Name;
+                dbEntry.Slug = slug;
+                dbEntry.Description = product.Description;
+                dbEntry.Price = product.Price;
+                dbEntry.CategoryId = product.CategoryId;
+                dbEntry.CategoryName = db.Categories.FirstOrDefault(x => x.Id == product.CategoryId).Name;
+
+                db.SaveChanges();
+
+                TempData["message"] = $"Product '{product.Name}' saved!";
+            }
+
+
+            //
+            //Image uploading
+            //
+
+            //(Not implemented yet just copied it from add product
+
+            //Create directories
+            var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\Uploads", Server.MapPath(@"\")));
+
+            List<string> paths = new List<string>
+            {
+                Path.Combine(originalDirectory.ToString(), "Products"),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString()),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Thumbs"),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery"),
+                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery\\Thumbs")
+            };
+
+            foreach (string path in paths)
+            {
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            }
+
+            //Check if file was uploaded
+            if (file != null && file.ContentLength > 0)
+            {
+                string ext = file.ContentType.ToLower();
+
+                //if the file format doesnt match, return a model error and category list to the view
+                switch (ext)
+                {
+                    case "image/jpg":
+                    case "image/jpeg":
+                    case "image/pjpeg":
+                    case "image/gif":
+                    case "image/x-png":
+                    case "image/png":
+                        break;
+
+                    default:
+                        using (Db db = new Db())
+                        {
+                            product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
+                            TempData["warning"] = $"Image not uploaded! {ext} file format not supported!";
+                            return RedirectToAction("EditProduct", new { id });
+                        }
+                }
+
+                string imageName = file.FileName;
+
+                using (Db db = new Db())
+                {
+                    ProductDTO dto = db.Products.Find(id);
+                    dto.ImageName = imageName;
+                    db.SaveChanges();
+                }
+
+                string path = string.Format("{0}\\{1}", paths[1], imageName);
+                string path2 = string.Format("{0}\\{1}", paths[2], imageName);
+
+                file.SaveAs(path);
+
+                //Thumbnail
+
+                WebImage img = new WebImage(file.InputStream);
+                img.Resize(200, 200);
+                img.Save(path2);
+
+            }
+
+            return RedirectToAction("Products");
         }
     }
 }
