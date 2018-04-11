@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
@@ -338,25 +339,6 @@ namespace Web.Areas.Admin.Controllers
             //Image uploading
             //
 
-            //(Not implemented yet just copied it from add product
-
-            //Create directories
-            var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\Uploads", Server.MapPath(@"\")));
-
-            List<string> paths = new List<string>
-            {
-                Path.Combine(originalDirectory.ToString(), "Products"),
-                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString()),
-                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Thumbs"),
-                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery"),
-                Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery\\Thumbs")
-            };
-
-            foreach (string path in paths)
-            {
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            }
-
             //Check if file was uploaded
             if (file != null && file.ContentLength > 0)
             {
@@ -378,9 +360,23 @@ namespace Web.Areas.Admin.Controllers
                         {
                             product.Categories = new SelectList(db.Categories.ToList(), "Id", "Name");
                             TempData["warning"] = $"Image not uploaded! {ext} file format not supported!";
-                            return RedirectToAction("EditProduct", new { id });
+                            return View(product);
                         }
                 }
+
+                //Get directory paths
+                var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\Uploads", Server.MapPath(@"\")));
+
+                string pathString1 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString());
+                string pathString2 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Thumbs");
+
+                //Delete old images from directory
+
+                DirectoryInfo dir1 = new DirectoryInfo(pathString1);
+                DirectoryInfo dir2 = new DirectoryInfo(pathString2);
+
+                foreach (FileInfo oldFile in dir1.GetFiles()) oldFile.Delete();
+                foreach (FileInfo oldFile in dir2.GetFiles()) oldFile.Delete();
 
                 string imageName = file.FileName;
 
@@ -391,8 +387,8 @@ namespace Web.Areas.Admin.Controllers
                     db.SaveChanges();
                 }
 
-                string path = string.Format("{0}\\{1}", paths[1], imageName);
-                string path2 = string.Format("{0}\\{1}", paths[2], imageName);
+                string path = string.Format("{0}\\{1}", pathString1, imageName);
+                string path2 = string.Format("{0}\\{1}", pathString2, imageName);
 
                 file.SaveAs(path);
 
@@ -405,6 +401,71 @@ namespace Web.Areas.Admin.Controllers
             }
 
             return RedirectToAction("Products");
+        }
+
+        public ActionResult DeleteProduct(int id)
+        {
+            using (Db db = new Db())
+            {
+                ProductDTO dto = db.Products.Find(id);
+
+                if (dto == null) return Content($"Product with id: {id} does not exist!");
+
+                db.Products.Remove(dto);
+                db.SaveChanges();
+
+                TempData["message"] = $"Product '{dto.Name}' removed!";
+            }
+
+            //Delete product directory
+            var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\Uploads", Server.MapPath(@"\")));
+
+            string pathString = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString());
+
+            //Delete old images from directory
+
+            if (Directory.Exists(pathString)) Directory.Delete(pathString, true);
+
+            return RedirectToAction("Products");
+        }
+
+        [HttpPost]
+        public void SaveGalleryImages(int id)
+        {
+            foreach (string fileName in Request.Files)
+            {
+                HttpPostedFileBase file = Request.Files[fileName];
+
+                if (file != null && file.ContentLength > 0)
+                {
+                    //Get directory paths
+                    var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\Uploads", Server.MapPath(@"\")));
+
+                    string pathString1 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery");
+                    string pathString2 = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString() + "\\Gallery\\Thumbs");
+
+
+                    string path = string.Format("{0}\\{1}", pathString1, file.FileName);
+                    string path2 = string.Format("{0}\\{1}", pathString2, file.FileName);
+
+                    file.SaveAs(path);
+
+                    //Thumbnail
+                    WebImage img = new WebImage(file.InputStream);
+                    img.Resize(200, 200);
+                    img.Save(path2);
+                }
+            }
+        }
+
+        [HttpPost]
+        public void DeleteImage(int id, string imageName)
+        {
+            string fullpathimage = Request.MapPath("~/Images/Uploads/Products/" + id + "/Gallery/" + imageName);
+            string fullpaththumb = Request.MapPath("~/Images/Uploads/Products/" + id + "/Gallery/Thumbs/" + imageName);
+
+            if (System.IO.File.Exists(fullpathimage)) System.IO.File.Delete(fullpathimage);
+            if (System.IO.File.Exists(fullpaththumb)) System.IO.File.Delete(fullpaththumb);
         }
     }
 }

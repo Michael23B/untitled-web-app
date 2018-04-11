@@ -22,6 +22,8 @@
             <ul class="nav navbar-nav">
                 <li>@Html.ActionLink("Pages", "Index", "Pages", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
                 <li>@Html.ActionLink("Sidebar", "EditSidebar", "Pages", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
+                <li>@Html.ActionLink("Products", "Products", "Store", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
+                <li>@Html.ActionLink("Categories", "Categories", "Store", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
             </ul>
             <ul class="navbar-right">
                 @Html.ActionLink("View Website Home", "Index", "Home", new { area = "" }, new { @class = "navbar-brand", target = "_blank"})
