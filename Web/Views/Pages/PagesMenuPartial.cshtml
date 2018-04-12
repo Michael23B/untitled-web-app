@@ -1,0 +1,10 @@
+﻿@model IEnumerable<Web.Models.ViewModels.Pages.PageViewModel>
+
+@{string activeClass = "";}
+
+@foreach (var item in Model)
+{
+    activeClass = item.Title == (string)TempData["currentPage"] ? "active" : "";
+
+    <li class=@activeClass>@Html.ActionLink(item.Title, "Index", new { page = item.Slug })</li>
+}
