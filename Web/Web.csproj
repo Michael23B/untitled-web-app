@@ -161,6 +161,7 @@
     <Compile Include="Areas\Admin\Controllers\PagesController.cs" />
     <Compile Include="Areas\Admin\Controllers\StoreController.cs" />
     <Compile Include="Controllers\PagesController.cs" />
+    <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -913,6 +914,9 @@
     <Content Include="Views\Pages\Index.cshtml" />
     <Content Include="Views\Pages\PagesMenuPartial.cshtml" />
     <Content Include="Views\Pages\SidebarPartial.cshtml" />
+    <Content Include="Views\Store\CategoryMenuPartial.cshtml" />
+    <Content Include="Views\Store\Category.cshtml" />
+    <Content Include="Views\Store\ProductDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Models\" />

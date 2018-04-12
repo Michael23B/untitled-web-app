@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using Web.Models.Data;
 using Web.Models.ViewModels.Pages;
+using Web.Models.ViewModels.Store;
 
 namespace Web.Controllers
 {
@@ -27,7 +30,7 @@ namespace Web.Controllers
             return View(model);
         }
 
-        public ActionResult PagesMenuPartial()
+        public PartialViewResult PagesMenuPartial()
         {
             List<PageViewModel> pages;
 
@@ -40,7 +43,7 @@ namespace Web.Controllers
             return PartialView(pages);
         }
 
-        public ActionResult SidebarPartial()
+        public PartialViewResult SidebarPartial()
         {
             SidebarViewModel sidebar;
 

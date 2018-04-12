@@ -1,0 +1,10 @@
+﻿@model IEnumerable<Web.Models.ViewModels.Store.CategoryViewModel>
+
+@{string activeClass = "";}
+
+@foreach (var item in Model)
+{
+    activeClass = item.Name == (string)TempData["currentCategory"] ? "active" : "";
+
+    <li class=@activeClass>@Html.ActionLink(item.Name, "Category", new { name = item.Slug })</li>
+}

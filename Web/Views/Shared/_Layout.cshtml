@@ -27,7 +27,12 @@
 </div>
 <div class="container body-content">
     <div class="row">
-    @if (ViewBag.Sidebar)
+
+        <div class="col-xs-12 col-md-2">
+            @Html.Action("CategoryMenuPartial", "Store")
+    </div>
+    <!--ViewBag.Sidebar is nullable bool so we check explicitly-->
+    @if (ViewBag.Sidebar == true)
     {
         <div class="col-xs-12 col-md-7">@RenderBody()</div>
         <div class="col-xs-12 col-md-3">@Html.Action("SidebarPartial", "Pages")</div>
@@ -36,7 +41,6 @@
     {
         <div class="col-xs-12 col-md-10">@RenderBody()</div>
     }
-        <!--put shop categories with 2 columns here-->
     </div>
     <hr/>
     <footer>
