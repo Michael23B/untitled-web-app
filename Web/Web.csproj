@@ -160,6 +160,7 @@
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\PagesController.cs" />
     <Compile Include="Areas\Admin\Controllers\StoreController.cs" />
+    <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\PagesController.cs" />
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Global.asax.cs">
@@ -170,6 +171,7 @@
     <Compile Include="Models\Data\CategoryDTO.cs" />
     <Compile Include="Models\Data\ProductDTO.cs" />
     <Compile Include="Models\Data\SidebarDTO.cs" />
+    <Compile Include="Models\ViewModels\Cart\CartViewModel.cs" />
     <Compile Include="Models\ViewModels\Pages\PageViewModel.cs" />
     <Compile Include="Models\ViewModels\Pages\SidebarViewModel.cs" />
     <Compile Include="Models\ViewModels\Store\CategoryViewModel.cs" />
@@ -933,6 +935,9 @@
     <Content Include="Views\Store\CategoryMenuPartial.cshtml" />
     <Content Include="Views\Store\Category.cshtml" />
     <Content Include="Views\Store\ProductDetails.cshtml" />
+    <Content Include="Views\Cart\CartPartial.cshtml" />
+    <Content Include="Views\Cart\Index.cshtml" />
+    <Content Include="Views\Cart\AddToCartPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Admin\Models\" />

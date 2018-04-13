@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Web.Models.ViewModels.Cart.CartViewModel>
+
+@{
+    ViewBag.Title = "Your Cart";
+}
+
+<h2>Your Cart</h2>
+
+@if (ViewBag.CartMessage != null)
+{
+    <div class="h3 alert-info text-center">@ViewBag.CartMessage</div>
+}
+else
+{
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Image)
+            </th>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Total)
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td class="qty@(item.ProductId)">
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    <img src="/Images/Uploads/Products/@item.ProductId/Thumbs/@item.Image">
+                </td>
+                <td>
+                    <a href="#" class="incrproduct" data-id="@item.ProductId">+</a>
+                    <a href="#" class="decrproduct" data-id="@item.ProductId">-</a>
+                    <a href="#" class="removeproduct" data-id="@item.ProductId">Remove</a>
+                </td>
+                <td class="total@(item.ProductId)">
+                    $@Html.DisplayFor(modelItem => item.Total)
+                </td>
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="grandtotal"><b>Grand Total </b>$<span>@ViewBag.CartTotal</span></td>
+        </tr>
+    </table>
+
+}
+
+@section Scripts {
+
+<script>
+    $(function () {
+
+        //Increment product
+        $("a.incrproduct").click(function (e) {
+            e.preventDefault();
+
+            var productId = $(this).data("id");
+            var url = "/Cart/IncrementProduct";
+
+            $.getJSON(url,
+                { productId: productId },
+                function(data) {
+
+                    $("td.qty" + productId).html(data.qty);
+
+                    var price = data.qty * data.price;
+                    var priceHtml = "$" + price.toFixed(2);
+
+                    $("td.total" + productId).html(priceHtml);
+
+                    var grandtotal = parseFloat($("td.grandtotal span").text());
+                    grandtotal = (grandtotal + data.price).toFixed(2);
+
+                    $("td.grandtotal span").text(grandtotal);
+                });
+        });
+
+        //Decrement product
+        $("a.decrproduct").click(function () {
+
+        });
+
+        //Remove product
+        $("a.removeproduct").click(function () {
+
+        });
+
+    });
+</script>
+}

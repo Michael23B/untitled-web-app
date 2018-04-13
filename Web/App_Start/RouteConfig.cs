@@ -11,9 +11,9 @@ namespace Web
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
-                name: "Page",
-                url: "{page}",
-                defaults: new { controller = "Pages", action = "Index", page = "home" },
+                name: "Cart",
+                url: "Cart/{action}/{id}",
+                defaults: new { controller = "Cart", action = "Index", id = UrlParameter.Optional },
                 namespaces: new[] { "Web.Controllers" }
             );
 
@@ -21,6 +21,13 @@ namespace Web
                 name: "Category",
                 url: "Store/{action}/{name}",
                 defaults: new { controller = "Store", action = "Index", name = UrlParameter.Optional },
+                namespaces: new[] { "Web.Controllers" }
+            );
+
+            routes.MapRoute(
+                name: "Page",
+                url: "{page}",
+                defaults: new { controller = "Pages", action = "Index", page = "home" },
                 namespaces: new[] { "Web.Controllers" }
             );
 

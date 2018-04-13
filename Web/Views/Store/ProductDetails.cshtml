@@ -60,6 +60,28 @@
         //Fancybox
         $(".fancybox").fancybox();
 
+        //Add to cart
+        $("a.addtocart").click(function(e) {
+            e.preventDefault();
+
+            //ib is defined as !important in the site.css so it unhides the loader
+            $("span.loader").addClass("ib");
+
+            var url = "/Cart/AddToCartPartial";
+
+            $.get(url, { id: @Model.Id }, function(data) {
+                    $(".ajaxcart").html(data);
+            }).done(function () {
+                $("span.loader").removeClass("ib");
+                $("span.ajaxmsg").addClass("ib");
+                setTimeout(function() {
+                    $("span.ajaxmsg").fadeOut("fast");
+                    $("span.ajaxmsg").removeClass("ib");
+                    },
+                    1000);
+            });
+        });
+
     });
 </script>
 }
