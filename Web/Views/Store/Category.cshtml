@@ -44,7 +44,7 @@ else
             <td>
                 @if (File.Exists(Server.MapPath("/Images/Uploads/Products/" + item.Id + "/Thumbs/" + item.ImageName)))
                 {
-                    <a href="/Store/ProductDetails/@item.Slug">
+                    <a href="/Store/product-details/@item.Slug">
                         <img src="/Images/Uploads/Products/@item.Id/Thumbs/@item.ImageName" />
                     </a>
                 }
