@@ -31,18 +31,31 @@
 <div class="container body-content">
     <div class="row">
 
-        <div class="col-xs-12 col-md-2">
-            @Html.Action("CategoryMenuPartial", "Store")
-    </div>
-    <!--ViewBag.Sidebar is nullable bool so we check explicitly-->
+       
+        <div class="col-xs-12 col-md-3 list-category text-primary">
+								
+            <h3 class="title">
+                Categories
+            </h3>			 
+            <div class="list-group">
+                @Html.Action("CategoryMenuPartial", "Store")
+            </div>
+									
+            <span class="list-footer">
+                <a href="@Url.Action("Category", "Store", new { name = "" })" class="btn btn-sm btn-primary btn-outline">View All</a>
+            </span>
+
+        </div>
+
+        <!--ViewBag.Sidebar is nullable bool so we check explicitly-->
     @if (ViewBag.Sidebar == true)
     {
         <div class="col-xs-12 col-md-7">@RenderBody()</div>
-        <div class="col-xs-12 col-md-3">@Html.Action("SidebarPartial", "Pages")</div>
+        <div class="col-xs-12 col-md-2">@Html.Action("SidebarPartial", "Pages")</div>
     }
     else
     {
-        <div class="col-xs-12 col-md-10">@RenderBody()</div>
+        <div class="col-xs-12 col-md-9">@RenderBody()</div>
     }
     </div>
     <hr/>

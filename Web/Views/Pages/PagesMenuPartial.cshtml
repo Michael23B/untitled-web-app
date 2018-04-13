@@ -6,5 +6,5 @@
 {
     activeClass = item.Title == (string)TempData["currentPage"] ? "active" : "";
 
-    <li class=@activeClass>@Html.ActionLink(item.Title, "Index", new { page = item.Slug })</li>
+    <li class="@activeClass">@Html.ActionLink(item.Title, "Index", new { page = item.Slug })</li>
 }

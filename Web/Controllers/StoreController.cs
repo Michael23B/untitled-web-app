@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using Web.Models.Data;
 using Web.Models.ViewModels.Pages;
 using Web.Models.ViewModels.Store;
@@ -31,21 +32,27 @@ namespace Web.Controllers
             return PartialView(categories);
         }
 
-        public ActionResult Category(string name)
+        public ActionResult Category(string name = "")
         {
             List<ProductViewModel> products;
 
             using (Db db = new Db())
             {
-                CategoryDTO dto = db.Categories.FirstOrDefault(x => x.Slug == name);
+                CategoryDTO dto = name.IsNullOrWhiteSpace() ? null : db.Categories.FirstOrDefault(x => x.Slug == name);
 
-                if (dto == null) return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+                if (dto == null)
+                {
+                    products = db.Products.ToArray().Select(x => new ProductViewModel(x)).ToList();
+                    ViewBag.CategoryName = "All";
+                }
+                else
+                {
+                    int categoryId = dto.Id;
 
-                int categoryId = dto.Id;
+                    products = db.Products.ToArray().Where(x => x.CategoryId == categoryId).Select(x => new ProductViewModel(x)).ToList();
 
-                products = db.Products.ToArray().Where(x => x.CategoryId == categoryId).Select(x => new ProductViewModel(x)).ToList();
-
-                ViewBag.CategoryName = db.Products.FirstOrDefault(x => x.CategoryId == categoryId)?.CategoryName;
+                    ViewBag.CategoryName = db.Products.FirstOrDefault(x => x.CategoryId == categoryId)?.CategoryName;
+                }
             }
 
             return View(products);

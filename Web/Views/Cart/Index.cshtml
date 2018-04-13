@@ -49,9 +49,9 @@ else
                     <img src="/Images/Uploads/Products/@item.ProductId/Thumbs/@item.Image">
                 </td>
                 <td>
-                    <a href="#" class="incrproduct" data-id="@item.ProductId">+</a>
-                    <a href="#" class="decrproduct" data-id="@item.ProductId">-</a>
-                    <a href="#" class="removeproduct" data-id="@item.ProductId">Remove</a>
+                    <a href="#" class="incrproduct btn btn-primary btn-outline" data-id="@item.ProductId"><b>+</b></a>
+                    <a href="#" class="decrproduct btn btn-primary btn-outline" data-id="@item.ProductId"><b>-</b></a>
+                    <a href="#" class="removeproduct btn btn-danger btn-outline" data-id="@item.ProductId">Remove</a>
                 </td>
                 <td class="total@(item.ProductId)">
                     $@Html.DisplayFor(modelItem => item.Total)
@@ -72,44 +72,81 @@ else
 
 @section Scripts {
 
-<script>
-    $(function () {
+    <script>
+        $(function() {
 
-        //Increment product
-        $("a.incrproduct").click(function (e) {
-            e.preventDefault();
+            //Increment product
+            $("a.incrproduct").click(function(e) {
+                e.preventDefault();
 
-            var productId = $(this).data("id");
-            var url = "/Cart/IncrementProduct";
+                var productId = $(this).data("id");
+                var url = "/Cart/IncrementProduct";
 
-            $.getJSON(url,
-                { productId: productId },
-                function(data) {
+                $.getJSON(url,
+                    { productId: productId },
+                    function(data) {
 
-                    $("td.qty" + productId).html(data.qty);
+                        $("td.qty" + productId).html(data.qty);
 
-                    var price = data.qty * data.price;
-                    var priceHtml = "$" + price.toFixed(2);
+                        var price = data.qty * data.price;
+                        var priceHtml = "$" + price.toFixed(2);
 
-                    $("td.total" + productId).html(priceHtml);
+                        $("td.total" + productId).html(priceHtml);
 
-                    var grandtotal = parseFloat($("td.grandtotal span").text());
-                    grandtotal = (grandtotal + data.price).toFixed(2);
+                        var grandtotal = parseFloat($("td.grandtotal span").text());
+                        grandtotal = (grandtotal + data.price).toFixed(2);
 
-                    $("td.grandtotal span").text(grandtotal);
-                });
+                        $("td.grandtotal span").text(grandtotal);
+                    });
+            });
+
+            //Increment product
+            $("a.decrproduct").click(function(e) {
+                e.preventDefault();
+
+                var $this = $(this);
+                var productId = $(this).data("id");
+                var url = "/Cart/DecrementProduct";
+
+                $.getJSON(url,
+                    { productId: productId },
+                    function(data) {
+
+                        if (data.qty === 0) {
+                            $this.parent().fadeOut("fast",
+                                function() {
+                                    location.reload();
+                                });
+                        } else {
+                            $("td.qty" + productId).html(data.qty);
+
+                            var price = data.qty * data.price;
+                            var priceHtml = "$" + price.toFixed(2);
+
+                            $("td.total" + productId).html(priceHtml);
+
+                            var grandtotal = parseFloat($("td.grandtotal span").text());
+                            grandtotal = (grandtotal - data.price).toFixed(2);
+
+                            $("td.grandtotal span").text(grandtotal);
+                        }
+                    });
+            });
+
+            //Remove product
+            $("a.removeproduct").click(function (e) {
+                e.preventDefault();
+
+                var productId = $(this).data("id");
+                var url = "/Cart/RemoveProduct";
+
+                $.get(url,
+                    { productId: productId },
+                    function () {
+                        location.reload();
+                    });
+            });
+
         });
-
-        //Decrement product
-        $("a.decrproduct").click(function () {
-
-        });
-
-        //Remove product
-        $("a.removeproduct").click(function () {
-
-        });
-
-    });
-</script>
+    </script>
 }

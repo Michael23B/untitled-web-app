@@ -101,7 +101,7 @@ namespace Web.Controllers
 
         public JsonResult IncrementProduct(int productId)
         {
-            var cart = (List<CartViewModel>)Session["cart"] ?? new List<CartViewModel>();
+            var cart = (List<CartViewModel>)Session["cart"] ;
 
             CartViewModel cartItem = cart.FirstOrDefault(x => x.ProductId == productId);
             cartItem.Quantity++;
@@ -109,6 +109,32 @@ namespace Web.Controllers
             var result = new { qty = cartItem.Quantity, price = cartItem.Price };
 
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult DecrementProduct(int productId)
+        {
+            var cart = (List<CartViewModel>)Session["cart"];
+
+            CartViewModel cartItem = cart.FirstOrDefault(x => x.ProductId == productId);
+
+            cartItem.Quantity--;
+            if (cartItem.Quantity <= 0)
+            {
+                cartItem.Quantity = 0;
+                cart.Remove(cartItem);
+            }
+
+            var result = new { qty = cartItem.Quantity, price = cartItem.Price };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public void RemoveProduct(int productId)
+        {
+            var cart = (List<CartViewModel>)Session["cart"];
+
+            CartViewModel cartItem = cart.FirstOrDefault(x => x.ProductId == productId);
+            cart.Remove(cartItem);
         }
     }
 }
