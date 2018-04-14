@@ -25,6 +25,13 @@ namespace Web
             );
 
             routes.MapRoute(
+                name: "Account",
+                url: "Account/{action}/{id}",
+                defaults: new { controller = "Account", action = "Index", id = UrlParameter.Optional },
+                namespaces: new[] { "Web.Controllers" }
+            );
+
+            routes.MapRoute(
                 name: "Page",
                 url: "{page}",
                 defaults: new { controller = "Pages", action = "Index", page = "home" },
