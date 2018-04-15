@@ -21,6 +21,16 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 @Html.Action("PagesMenuPartial", "Pages")
+                @if (Request.IsAuthenticated)
+                {
+                    <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+                    <li>@Html.Action("UserNavPartial", "Account", new {area = ""})</li>
+                }
+                else
+                {
+                    string loginActiveClass = ViewBag.Title == "Login" ? "active" : "";
+                    <li class="@loginActiveClass">@Html.ActionLink("Login", "Login", "Account")</li>
+                }
             </ul>
             <ul class="nav navbar-collapse collapse  navbar-right">
                 @Html.Action("CartPartial", "Cart")
