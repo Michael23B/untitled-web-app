@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using Microsoft.Ajax.Utilities;
+using Microsoft.ApplicationInsights.Web;
 using Web.Models.Data;
 using Web.Models.ViewModels.Account;
 
@@ -176,14 +177,14 @@ namespace Web.Controllers
                 if (!string.IsNullOrWhiteSpace(model.Password)) dto.Password = model.Password;
 
                 db.SaveChanges();
-
-                //changing username has issues because the user.identity isnt updated
-                //TODO: fix that
             }
 
-            TempData["message"] = "Profile changes saved!";
+            FormsAuthentication.SignOut();
+            Session.Clear();
 
-            return RedirectToAction("user-profile");
+            TempData["message"] = "Profile changes saved! Please sign in with your new details.";
+
+            return RedirectToAction("Login");
         }
     }
 }

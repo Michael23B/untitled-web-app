@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Your Cart";
+    int cartCount = 1;
 }
 
 <h2>Your Cart</h2>
@@ -12,6 +13,9 @@
 }
 else
 {
+    <div class="ajaxbg"><span>
+        <img src="~/Content/img/loading.gif" />
+    </span></div>
 
     <table class="table">
         <tr>
@@ -68,6 +72,22 @@ else
         </tr>
     </table>
 
+    <form class="paypalform" action="https://www.sandbox.paypal.com/us/cgi-bin/webscr" method="post">
+        <input type="hidden" name="cmd" value="_cart">
+        <input type="hidden" name="business" value="youremailhere@email-facilitator.com">
+        @foreach (var item in Model)
+        {
+            <input type="hidden" name="item_name_@cartCount" value="@item.ProductName">
+            <input type="hidden" name="amount_@cartCount" value="@item.Price">
+            <input type="hidden" name="quantity_@cartCount" value="@item.Quantity">
+            @(cartCount++)
+        }
+        <input type="hidden" name="currency_code" value="USD">
+        <input type="image" src="http://www.paypal.com/en_US/i/btn/x-click-but01.gif" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+    </form>
+
+    <br />
+    <a href="#" class="placeorder btn btn-primary btn-outline pull-right">Checkout</a>
 }
 
 @section Scripts {

@@ -24,7 +24,9 @@
                 @if (Request.IsAuthenticated)
                 {
                     <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
-                    <li>@Html.Action("UserNavPartial", "Account", new {area = ""})</li>
+
+                    string accountActiveClass = ViewBag.Title == "My Profile" ? "active" : "";
+                    if (User.IsInRole("User")) { <li class="@accountActiveClass">@Html.Action("UserNavPartial", "Account", new {area = ""})</li> }
                 }
                 else
                 {
@@ -32,9 +34,21 @@
                     <li class="@loginActiveClass">@Html.ActionLink("Login", "Login", "Account")</li>
                 }
             </ul>
-            <ul class="nav navbar-collapse collapse  navbar-right">
-                @Html.Action("CartPartial", "Cart")
-            </ul>
+            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li>@Html.ActionLink("Admin Dashboard", "Index", "Dashboard", new { area = "admin" }, null)</li>
+                </ul>
+            }
+            else
+            {
+                if (ViewBag.Title != "Your Cart")
+                {
+                    <ul class="nav navbar-nav navbar-right">
+                        @Html.Action("CartPartial", "Cart")
+                    </ul>
+                }
+            }
         </div>
     </div>
 </div>
