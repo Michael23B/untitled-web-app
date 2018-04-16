@@ -13,10 +13,6 @@
 }
 else
 {
-    <div class="ajaxbg"><span>
-        <img src="~/Content/img/loading.gif" />
-    </span></div>
-
     <table class="table">
         <tr>
             <th>
@@ -75,14 +71,15 @@ else
     <div class="paypaldiv">
         <form class="paypalform" action="https://www.sandbox.paypal.com/us/cgi-bin/webscr" method="post">
             <input type="hidden" name="cmd" value="_cart">
-            <input type="hidden" name="business" value="youremailhere@email-facilitator.com">
+            <input type="hidden" name="upload" value="1">
+            <input type="hidden" name="business" value="youremail-facilitator@email.com">
             @foreach (var item in Model)
-            {
+             {
                 <input type="hidden" name="item_name_@cartCount" value="@item.ProductName">
                 <input type="hidden" name="amount_@cartCount" value="@item.Price">
                 <input type="hidden" name="quantity_@cartCount" value="@item.Quantity">
                 @(cartCount++)
-             }
+            }
             <input type="hidden" name="currency_code" value="USD">
             <input type="image" src="http://www.paypal.com/en_US/i/btn/x-click-but01.gif" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
         </form>
@@ -184,6 +181,23 @@ else
                 function() {
                     location.reload();
                 });
+        });
+
+        //Place order
+        $("a.placeorder").click(function (e) {
+            e.preventDefault();
+
+            var $this = $(this);
+            var url = "/Cart/PlaceOrder";
+
+            $(".ajaxbg").show();
+
+            $.post(url, {}, function (data) {
+                $("ajaxbg.span").text("Hold on while we redirect you to Paypal...");
+                setTimeout(function() {
+                    $('form input[name = "submit"]').click();
+                }, 2000);
+            });
         });
     </script>
 }

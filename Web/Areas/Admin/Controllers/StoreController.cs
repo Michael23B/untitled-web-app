@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
 using PagedList;
+using Web.Areas.Admin.Models.ViewModels.Store;
 using Web.Models.Data;
 using Web.Models.ViewModels.Store;
 
@@ -466,6 +465,50 @@ namespace Web.Areas.Admin.Controllers
 
             if (System.IO.File.Exists(fullpathimage)) System.IO.File.Delete(fullpathimage);
             if (System.IO.File.Exists(fullpaththumb)) System.IO.File.Delete(fullpaththumb);
+        }
+
+        public ActionResult Orders()
+        {
+            List<OrderAdminViewModel> adminOrders = new List<OrderAdminViewModel>();
+
+            using (Db db = new Db())
+            {
+                List<OrderViewModel> orders = db.Orders.ToArray().Select(x => new OrderViewModel(x)).ToList();
+
+                foreach (var order in orders)
+                {
+                    var productsAndQty = new Dictionary<string, int>();
+
+                    decimal total = 0m;
+
+                    List<OrderDetailsDTO> orderDetailsList =
+                        db.OrderDetails.Where(x => x.OrderId == order.OrderId).ToList();
+
+                    string username = db.Users.FirstOrDefault(x => x.Id == order.UserId).Username;
+
+                    foreach (var orderDetails in orderDetailsList)
+                    {
+                        ProductDTO productDto = db.Products.FirstOrDefault(x => x.Id == orderDetails.ProductId);
+                        decimal price = productDto.Price;
+                        string productname = productDto.Name;
+                        int qty = orderDetails.Quantity;
+
+                        productsAndQty.Add(productname, qty);
+                        total += price * qty;
+                    }
+
+                    adminOrders.Add(new OrderAdminViewModel
+                    {
+                        OrderId = order.OrderId,
+                        UserName = username,
+                        Total = total,
+                        CreatedAt = order.CreatedAt,
+                        ProductsAndQty = productsAndQty
+                    });
+                }
+            }
+
+            return View(adminOrders);
         }
     }
 }

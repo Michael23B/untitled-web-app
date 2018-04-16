@@ -138,13 +138,13 @@ div.list-category a.list-group-item {
     height: 100%;
     background: white;
     display: none;
+    z-index: 5;
 }
 
 .ajaxbg span {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%, -50%, 0);
+    top: 30%;
+    left: 30%;
 }
 
 form.paypalform {

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using Web.Infrastructure;
 using Web.Models.Data;
 using Web.Models.ViewModels.Cart;
 
@@ -142,6 +146,83 @@ namespace Web.Controllers
             var cart = (List<CartViewModel>)Session["cart"];
 
             return PartialView(cart);
+        }
+
+        [HttpPost]
+        public void PlaceOrder()
+        {
+            var cart = (List<CartViewModel>)Session["cart"];
+            string username = User.Identity.Name;
+            int orderId;
+
+            using (Db db = new Db())
+            {
+                int userId = db.Users.FirstOrDefault(x => x.Username == username).Id;
+
+                OrderDTO orderDto = new OrderDTO
+                {
+                    UserId = userId,
+                    CreatedAt = DateTime.Now
+                };
+
+                db.Orders.Add(orderDto);
+                db.SaveChanges();
+
+                orderId = orderDto.OrderId;
+
+                //Add the details for this item + orderId for each item in the cart
+                foreach (var item in cart)
+                {
+                    OrderDetailsDTO orderDetailsDto = new OrderDetailsDTO
+                    {
+                        OrderId = orderId,
+                        UserId = userId,
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity
+                    };
+
+                    db.OrderDetails.Add(orderDetailsDto);
+                }
+
+                db.SaveChanges();
+            }
+
+            SendEmail(orderId);
+
+            Session["cart"] = null;
+        }
+
+        private void SendEmail(int orderId)
+        {
+            EmailSettings emailSettings = new EmailSettings();
+            emailSettings.ReadFromFile(AppDomain.CurrentDomain.BaseDirectory + "App_Data/secret_settings.txt");
+            //Email to admin
+            using (var smtpClient = new SmtpClient())
+            {
+                smtpClient.EnableSsl = emailSettings.UseSsl;
+                smtpClient.Host = emailSettings.ServerName;
+                smtpClient.Port = emailSettings.ServerPort;
+                smtpClient.UseDefaultCredentials = false;
+                smtpClient.Credentials = new NetworkCredential(emailSettings.Username, emailSettings.Password);
+
+                if (emailSettings.WriteAsFile)
+                {
+                    smtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+                    smtpClient.PickupDirectoryLocation = emailSettings.FileLocation;
+                    smtpClient.EnableSsl = false;
+                }
+
+                string body = $"New order Id: {orderId}";
+
+                MailMessage mailMessage = new MailMessage(emailSettings.MailFromAddress, emailSettings.MailToAddress, "New order submitted!", body);
+
+                if (emailSettings.WriteAsFile)
+                {
+                    mailMessage.BodyEncoding = Encoding.ASCII;
+                }
+
+                smtpClient.Send(mailMessage);
+            }
         }
     }
 }
