@@ -136,5 +136,12 @@ namespace Web.Controllers
             CartViewModel cartItem = cart.FirstOrDefault(x => x.ProductId == productId);
             cart.Remove(cartItem);
         }
+
+        public PartialViewResult PaypalPartial()
+        {
+            var cart = (List<CartViewModel>)Session["cart"];
+
+            return PartialView(cart);
+        }
     }
 }
