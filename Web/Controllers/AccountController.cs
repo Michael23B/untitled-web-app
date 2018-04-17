@@ -9,6 +9,7 @@ using Microsoft.Ajax.Utilities;
 using Microsoft.ApplicationInsights.Web;
 using Web.Models.Data;
 using Web.Models.ViewModels.Account;
+using Web.Models.ViewModels.Store;
 
 namespace Web.Controllers
 {
@@ -185,6 +186,53 @@ namespace Web.Controllers
             TempData["message"] = "Profile changes saved! Please sign in with your new details.";
 
             return RedirectToAction("Login");
+        }
+
+        [Authorize]
+        public ActionResult Orders()
+        {
+            List<OrderUserViewModel> userOrders = new List<OrderUserViewModel>();
+
+            using (Db db = new Db())
+            {
+                UserDTO user = db.Users.FirstOrDefault(x => x.Username == User.Identity.Name);
+
+                List<OrderViewModel> orders = db.Orders.Where(x => x.UserId == user.Id).ToArray().Select(x => new OrderViewModel(x)).ToList();
+
+                foreach (var order in orders)
+                {
+                    var productsAndQty = new Dictionary<string, int>();
+
+                    decimal total = 0m;
+
+                    List<OrderDetailsDTO> orderDetailsList =
+                        db.OrderDetails.Where(x => x.OrderId == order.OrderId).ToList();
+
+                    string username = user.Username;
+
+                    foreach (var orderDetails in orderDetailsList)
+                    {
+                        ProductDTO productDto = db.Products.FirstOrDefault(x => x.Id == orderDetails.ProductId);
+                        decimal price = productDto.Price;
+                        string productname = productDto.Name;
+                        int qty = orderDetails.Quantity;
+
+                        productsAndQty.Add(productname, qty);
+                        total += price * qty;
+                    }
+
+                    userOrders.Add(new OrderUserViewModel
+                    {
+                        OrderId = order.OrderId,
+                        UserName = username,
+                        Total = total,
+                        CreatedAt = order.CreatedAt,
+                        ProductsAndQty = productsAndQty
+                    });
+                }
+            }
+
+            return View(userOrders);
         }
     }
 }
