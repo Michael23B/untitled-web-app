@@ -2,6 +2,7 @@
 
 namespace Web.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class DashboardController : Controller
     {
         public ActionResult Index()

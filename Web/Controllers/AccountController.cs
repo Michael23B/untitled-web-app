@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using Microsoft.Ajax.Utilities;
-using Microsoft.ApplicationInsights.Web;
 using Web.Models.Data;
 using Web.Models.ViewModels.Account;
 using Web.Models.ViewModels.Store;
 
 namespace Web.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return Redirect("~/Account/Login");
         }
 
+        [AllowAnonymous]
         public ActionResult Login()
         {
             string username = User.Identity.Name;
@@ -29,6 +27,7 @@ namespace Web.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public ActionResult Login(LoginUserViewModel model)
         {
@@ -55,12 +54,14 @@ namespace Web.Controllers
             return RedirectToAction("Login");
         }
 
+        [AllowAnonymous]
         [ActionName("create-account")]
         public ActionResult CreateAccount()
         {
             return View("CreateAccount");
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ActionName("create-account")]
         public ActionResult CreateAccount(UserViewModel model)
@@ -188,7 +189,7 @@ namespace Web.Controllers
             return RedirectToAction("Login");
         }
 
-        [Authorize]
+        [Authorize(Roles="User")]
         public ActionResult Orders()
         {
             List<OrderUserViewModel> userOrders = new List<OrderUserViewModel>();

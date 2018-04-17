@@ -7,6 +7,7 @@ using Web.Models.ViewModels.Pages;
 
 namespace Web.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PagesController : Controller
     {
         public ActionResult Index()

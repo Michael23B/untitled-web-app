@@ -11,6 +11,7 @@ using Web.Models.ViewModels.Store;
 
 namespace Web.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class StoreController : Controller
     {
         public ActionResult Categories()

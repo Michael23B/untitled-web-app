@@ -5,7 +5,6 @@ using System.Net;
 using System.Web.Mvc;
 using Web.Models.Data;
 using Web.Models.ViewModels.Pages;
-using Web.Models.ViewModels.Store;
 
 namespace Web.Controllers
 {

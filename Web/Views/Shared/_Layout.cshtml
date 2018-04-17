@@ -25,7 +25,7 @@
                 {
                     <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
 
-                    string accountActiveClass = ViewBag.Title == "My Profile" ? "active" : "";
+                    string accountActiveClass = ViewBag.Title == "My Profile" || ViewBag.Title == "Orders" ? "active" : "";
                     if (User.IsInRole("User")) { <li class="@accountActiveClass">@Html.Action("UserNavPartial", "Account", new {area = ""})</li> }
                 }
                 else
@@ -55,22 +55,25 @@
 <div class="container body-content">
     <div class="row">
         <div class="ajaxbg"><span><img src="~/Content/img/loading.gif" /></span></div>
-       
-        <div class="col-xs-12 col-md-3 list-category text-primary">
+        @{ string[] disableCategories = {"Create Account", "Login", "My Profile", "Orders"}; }
+        @if (!disableCategories.Contains((string) ViewBag.Title))
+        {
+            <div class="col-xs-12 col-md-3 list-category text-primary">
 								
-            <h3 class="title">
-                Categories
-            </h3>			 
-            <div class="list-group">
-                @Html.Action("CategoryMenuPartial", "Store")
-            </div>
+                <h3 class="title">
+                    Categories
+                </h3>			 
+                <div class="list-group">
+                    @Html.Action("CategoryMenuPartial", "Store")
+                </div>
 									
-            <span class="list-footer">
-                <a href="@Url.Action("Category", "Store", new { name = "" })" class="btn btn-sm btn-primary btn-outline">View All</a>
-            </span>
+                <span class="list-footer">
+                    <a href="@Url.Action("Category", "Store", new { name = "" })" class="btn btn-sm btn-primary btn-outline">View All</a>
+                </span>
 
-        </div>
-
+            </div>
+        }
+        
         <!--ViewBag.Sidebar is nullable bool so we check explicitly-->
     @if (ViewBag.Sidebar == true)
     {
@@ -83,8 +86,9 @@
     }
     </div>
     <hr/>
+    @{ string[] phrases = {"wow", "amazing", "incredible", "astounding", "powerful", "mystifying", "bewildering", "stunning", "astonishing"}; }
     <footer>
-        <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        <p>&copy; @DateTime.Now.Ticks - this is the current tick. @phrases[new Random().Next(0, phrases.Length)].</p>
     </footer>
 </div>
 

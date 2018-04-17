@@ -20,14 +20,14 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li>@Html.ActionLink("Pages", "Index", "Pages", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
-                <li>@Html.ActionLink("Sidebar", "EditSidebar", "Pages", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
-                <li>@Html.ActionLink("Products", "Products", "Store", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
-                <li>@Html.ActionLink("Categories", "Categories", "Store", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
-                <li>@Html.ActionLink("Orders", "Orders", "Store", new { area = "Admin" }, new { @class = "navbar-brand" })</li>
+                <li>@Html.ActionLink("Pages", "Index", "Pages", new { area = "Admin" }, null)</li>
+                <li>@Html.ActionLink("Sidebar", "EditSidebar", "Pages", new { area = "Admin" }, null)</li>
+                <li>@Html.ActionLink("Products", "Products", "Store", new { area = "Admin" }, null)</li>
+                <li>@Html.ActionLink("Categories", "Categories", "Store", new { area = "Admin" }, null)</li>
+                <li>@Html.ActionLink("Orders", "Orders", "Store", new { area = "Admin" }, null)</li>
             </ul>
             <ul class="navbar-right">
-                @Html.ActionLink("View Website Home", "Index", "Home", new { area = "" }, new { @class = "navbar-brand", target = "_blank"})
+                @Html.ActionLink("View Website Home", "Index", "Pages", new { area = "", page = "home" }, new { @class = "navbar-brand", target = "_blank" })
             </ul>
         </div>
     </div>
@@ -36,7 +36,7 @@
     @RenderBody()
     <hr />
     <footer>
-        <p>&diams; Admin area - Remember to @Html.ActionLink("sign out", "Index", "Home", new { area="" }, null) when finished.</p>
+        <p>&diams; Admin area - Remember to @Html.ActionLink("sign out", "Logout", "Account", new { area="" }, null) when finished.</p>
     </footer>
 </div>
 
