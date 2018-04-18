@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using Web.Infrastructure;
 using Web.Models.Data;
@@ -14,6 +13,7 @@ namespace Web.Controllers
 {
     public class CartController : Controller
     {
+        [Authorize(Roles = "User")]
         public ActionResult Index()
         {
             var cart = (List<CartViewModel>)Session["cart"] ?? new List<CartViewModel>();
